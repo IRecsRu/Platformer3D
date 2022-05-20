@@ -6,7 +6,7 @@ using Modules.Core.Infrastructure.Services.PersistentProgress;
 using Modules.Core.PlayerLogic;
 using UnityEngine;
 
-namespace Modules.GameScene
+namespace Modules.GameScene.Levels
 {
 	public class LevelManager : ISavedProgress, IUserCurtainShower
 	{

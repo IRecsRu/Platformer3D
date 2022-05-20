@@ -1,7 +1,7 @@
 ﻿using Modules.Core.Infrastructure.Services.SaveLoad;
 using UnityEngine;
 
-namespace Modules.GameScene
+namespace Modules.GameScene.Levels
 {
 	public class SaveTrigger : MonoBehaviour
 	{

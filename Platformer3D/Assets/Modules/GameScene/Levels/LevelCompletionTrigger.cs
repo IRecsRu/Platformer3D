@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Modules.GameScene
+namespace Modules.GameScene.Levels
 {
     public class LevelCompletionTrigger : MonoBehaviour
     {

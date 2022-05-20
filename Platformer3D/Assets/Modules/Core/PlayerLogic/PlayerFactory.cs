@@ -29,7 +29,7 @@ namespace Modules.Core.PlayerLogic
 		
 		private static void SetCameraFollow(CinemachineFreeLook freeLook, GameObject player)
 		{
-			freeLook.transform.position = player.transform.position;
+			freeLook.transform.position = player.transform.position - player.transform.forward;
 			freeLook.LookAt = player.transform;
 			freeLook.Follow = player.transform;
 		}

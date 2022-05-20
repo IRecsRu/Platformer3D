@@ -37,7 +37,7 @@ namespace Modules.Core.PlayerLogic
       if(_move != null)
         _move.enabled = false;
       
-      //_animator.PlayDeath();
+      _animator.PlayDeath();
     }
   }
 }

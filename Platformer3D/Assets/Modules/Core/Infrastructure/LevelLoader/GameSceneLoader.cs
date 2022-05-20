@@ -6,6 +6,7 @@ using Modules.Core.Infrastructure.Services.PersistentProgress;
 using Modules.Core.Infrastructure.Services.SaveLoad;
 using Modules.Core.PlayerLogic;
 using Modules.GameScene;
+using Modules.GameScene.Levels;
 using UnityEngine;
 using Zenject;
 

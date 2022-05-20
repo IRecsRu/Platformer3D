@@ -3,7 +3,7 @@ using Modules.Core.Infrastructure.AddressablesServices;
 using Modules.Core.Infrastructure.Services.SaveLoad;
 using UnityEngine;
 
-namespace Modules.GameScene
+namespace Modules.GameScene.Levels
 {
 	public class LevelFactory
 	{
