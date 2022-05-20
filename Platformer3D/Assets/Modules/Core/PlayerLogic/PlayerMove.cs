@@ -1,48 +1,44 @@
-﻿/*
-using Modules.Core.Infrastructure.Services.PersistentProgress;
-*/
-
-using UnityEngine;
+﻿using UnityEngine;
 using Modules.Core.Data;
+using Modules.Core.Infrastructure.Services.PersistentProgress;
 using Modules.Core.Services.Input;
-using UnityEngine.SceneManagement;
-
-//using Zenject;
 
 namespace Modules.Core.PlayerLogic
 {
-	[RequireComponent(typeof(CharacterController))]
-	public class PlayerMove : MonoBehaviour //, ISavedProgress
+	[RequireComponent(typeof(CharacterController), typeof(GroundCheck))]
+	public class PlayerMove : MonoBehaviour, ISavedProgress
 	{
+		[SerializeField] private GameObject _fx;
+		
 		private CharacterController _characterController;
-
-		private MoveStats _moveStats = new();
+		private MoveStats _moveStats;
 
 		private IInputService _inputService;
 		private Camera _camera;
+		private GroundCheck _groundCheck;
 
 		private Vector3 _playerVelocity;
-		[SerializeField] private float _jumpHeight = 1.0f;
-		private float _gravityValue = -9.81f;
+		private float _gravityValue;
 
 		public void Constructor(IInputService inputService)
 		{
+			_gravityValue = Physics.gravity.y;
 			_inputService = inputService;
 			_characterController = GetComponent<CharacterController>();
+			_groundCheck = GetComponent<GroundCheck>();
 		}
 
-		private void Start()
-		{
-			_gravityValue = Physics.gravity.y;
-			_inputService = new StandaloneInputService();
-			_characterController = GetComponent<CharacterController>();
+		private void Start() =>
 			_camera = Camera.main;
-		}
 
 		private void Update()
 		{
+			if(_inputService == null)
+			   return;
 			TryMove();
 			TryJump();
+
+			Debug.Log(_characterController.velocity.magnitude);
 		}
 
 		private void TryMove()
@@ -58,17 +54,20 @@ namespace Modules.Core.PlayerLogic
 
 				movementVector *= _moveStats.MoveSpeed;
 
+				if(!_groundCheck.IsGrounded)
+					movementVector *= 2;
+				
 				_characterController.Move(movementVector * Time.deltaTime);
 			}
 		}
 
 		private void TryJump()
 		{
-			if(_inputService.IsJumpButtonUp())
+			if(_inputService.IsJumpButtonUp() && _groundCheck.IsGrounded)
 			{
 				_playerVelocity.y = 0f;
-				_playerVelocity.y += Mathf.Sqrt(_jumpHeight * -1 * _gravityValue);
-				Debug.Log("Jump" + _playerVelocity.y);
+				_playerVelocity.y += Mathf.Sqrt(_moveStats.JumpHeight * -1 * _gravityValue);
+				Instantiate(_fx, transform.position, Quaternion.identity);
 			}
 			
 			_playerVelocity.y += _gravityValue * Time.deltaTime;
@@ -77,28 +76,30 @@ namespace Modules.Core.PlayerLogic
 
 		public void UpdateProgress(PlayerProgress progress)
 		{
-			progress.WorldData.PositionOnLevel = new PositionOnLevel(CurrentLevel(), transform.position.AsVectorData());
+			progress.WorldData.PositionOnLevel.Position = (transform.position).AsVectorData();
 			progress.MoveStats = _moveStats;
 		}
 
 		public void LoadProgress(PlayerProgress progress)
 		{
-			if(CurrentLevel() != progress.WorldData.PositionOnLevel.Level) return;
-
 			_moveStats = progress.MoveStats;
+
+			if(progress.IsClean)
+				return;
+			
 			Vector3Data savedPosition = progress.WorldData.PositionOnLevel.Position;
 			if(savedPosition != null)
 				Warp(to: savedPosition);
 		}
 
-		private static string CurrentLevel() =>
-			SceneManager.GetActiveScene().name;
-
 		private void Warp(Vector3Data to)
 		{
 			_characterController.enabled = false;
-			transform.position = to.AsUnityVector().AddY(_characterController.height);
+			transform.position = to.AsUnityVector().AddY(_characterController.height * 9);
 			_characterController.enabled = true;
 		}
+		
+		public void Warp(Vector3 to) =>
+			Warp(new Vector3Data(to.x, to.y, to.z));
 	}
 }

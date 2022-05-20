@@ -8,8 +8,7 @@ namespace Modules.Core.PlayerLogic
     private PlayerHealth _health;
     private PlayerMove _move;
     private PlayerAnimator _animator;
-
-    public GameObject DeathFx;
+    
     private bool _isDead;
 
     private void Awake()
@@ -19,15 +18,11 @@ namespace Modules.Core.PlayerLogic
       _animator = GetComponent<PlayerAnimator>();
     }
 
-    private void Start()
-    {
+    private void Start() =>
       _health.HealthChanged += HealthChanged;
-    }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() =>
       _health.HealthChanged -= HealthChanged;
-    }
 
     private void HealthChanged()
     {
@@ -43,8 +38,6 @@ namespace Modules.Core.PlayerLogic
         _move.enabled = false;
       
       //_animator.PlayDeath();
-
-      Instantiate(DeathFx, transform.position, Quaternion.identity);
     }
   }
 }

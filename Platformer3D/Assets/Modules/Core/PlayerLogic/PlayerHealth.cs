@@ -1,13 +1,13 @@
 using System;
 using Modules.Core.Data;
-//using Modules.Core.Infrastructure.Services.PersistentProgress;
-//using Modules.Core.Logic;
+using Modules.Core.Infrastructure.Services.PersistentProgress;
+using Modules.Core.Logic;
 using UnityEngine;
 
 namespace Modules.Core.PlayerLogic
 {
   [RequireComponent(typeof(PlayerAnimator))]
-  public class PlayerHealth : MonoBehaviour//, ISavedProgress, IHealth
+  public class PlayerHealth : MonoBehaviour, IHealth, ISavedProgress
   {
     private PlayerAnimator _animator;
     private HealthState _healthState;
@@ -17,14 +17,13 @@ namespace Modules.Core.PlayerLogic
     public float Current
     {
       get => _healthState.CurrentHP;
-      set
+      private set
       {
-        if (value != _healthState.CurrentHP)
-        {
-          _healthState.CurrentHP = value;
-          
-          HealthChanged?.Invoke();
-        }
+        if(value == _healthState.CurrentHP)
+          return;
+        
+        _healthState.CurrentHP = value;
+        HealthChanged?.Invoke();
       }
     }
 
@@ -34,10 +33,8 @@ namespace Modules.Core.PlayerLogic
       set => _healthState.MaxHP = value;
     }
 
-    private void Awake()
-    {
+    private void Awake() =>
       _animator = GetComponent<PlayerAnimator>();
-    }
 
     public void LoadProgress(PlayerProgress progress)
     {
@@ -45,11 +42,8 @@ namespace Modules.Core.PlayerLogic
       HealthChanged?.Invoke();
     }
 
-    public void UpdateProgress(PlayerProgress progress)
-    {
-      progress.HealthState.CurrentHP = Current;
-      progress.HealthState.MaxHP = Max;
-    }
+    public void UpdateProgress(PlayerProgress progress) =>
+      progress.HealthState = _healthState;
 
     public void TakeDamage(float damage)
     {
@@ -57,7 +51,10 @@ namespace Modules.Core.PlayerLogic
         return;
       
       Current -= damage;
-      //_animator.PlayHit();
+      _animator.PlayHit();
     }
+    
+    public void TakeLethalDamage() =>
+      TakeDamage(Current);
   }
 }

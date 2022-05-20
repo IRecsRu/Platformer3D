@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Modules.Core.Data
 {
@@ -7,9 +8,9 @@ namespace Modules.Core.Data
   {
     public PositionOnLevel PositionOnLevel;
 
-    public WorldData(string initialLevel)
+    public WorldData()
     {
-      PositionOnLevel = new PositionOnLevel(initialLevel);
+      PositionOnLevel = new PositionOnLevel();
     }
   }
 }

@@ -1,45 +1,46 @@
-/*using System;
+using System;
 using Modules.Core.Logic;
-*/
+using Modules.Core.Services.Input;
 using UnityEngine;
+using Zenject;
 
 namespace Modules.Core.PlayerLogic
 {
-  public class PlayerAnimator : MonoBehaviour//, IAnimationStateReader
-  {/*
-    [SerializeField] private CharacterController _characterController;
-    [SerializeField] public Animator _animator;
+  public class PlayerAnimator : MonoBehaviour, IAnimationStateReader
+  {
+    private Animator _animator;
 
     private static readonly int MoveHash = Animator.StringToHash("Walking");
-    private static readonly int AttackHash = Animator.StringToHash("AttackNormal");
     private static readonly int HitHash = Animator.StringToHash("Hit");
     private static readonly int DieHash = Animator.StringToHash("Die");
 
     private readonly int _idleStateHash = Animator.StringToHash("Idle");
     private readonly int _idleStateFullHash = Animator.StringToHash("Base Layer.Idle");
-    private readonly int _attackStateHash = Animator.StringToHash("Punching");
     private readonly int _walkingStateHash = Animator.StringToHash("Move");
     private readonly int _deathStateHash = Animator.StringToHash("Die");
+    
+    private IInputService _inputService;
 
     public event Action<AnimatorState> StateEntered;
     public event Action<AnimatorState> StateExited;
 
     public AnimatorState State { get; private set; }
-    public bool IsAttacking => State == AnimatorState.Attack;
-
+    
+    public void Constructor(IInputService inputService)
+    {
+      _inputService = inputService;
+      _animator = GetComponent<Animator>();
+    }
+    
     private void Update()
     {
-      _animator.SetFloat(MoveHash, _characterController.velocity.magnitude, 0.1f, Time.deltaTime);
+      float value = Math.Abs(_inputService.Axis.x) + Math.Abs(_inputService.Axis.y);
+      _animator.SetFloat(MoveHash, value, 0.1f, Time.deltaTime);
     }
 
     public void PlayHit()
     {
       _animator.SetTrigger(HitHash);
-    }
-
-    public void PlayAttack()
-    {
-      _animator.SetTrigger(AttackHash);
     }
 
     public void PlayDeath()
@@ -70,10 +71,6 @@ namespace Modules.Core.PlayerLogic
       {
         state = AnimatorState.Idle;
       }
-      else if (stateHash == _attackStateHash)
-      {
-        state = AnimatorState.Attack;
-      }
       else if (stateHash == _walkingStateHash)
       {
         state = AnimatorState.Walking;
@@ -88,6 +85,6 @@ namespace Modules.Core.PlayerLogic
       }
 
       return state;
-    }*/
+    }
   }
 }

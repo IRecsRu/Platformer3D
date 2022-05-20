@@ -7,7 +7,6 @@ namespace Modules.Core.StaticData
 	public class PlayerStaticData : ScriptableObject
 	{
 		public HealthState HealthState;
-		public AttackStats AttackStats;
 		public MoveStats MoveStats;
 	}
 }
