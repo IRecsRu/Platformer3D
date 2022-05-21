@@ -8,6 +8,7 @@ namespace Modules.Core.PlayerLogic
 {
   public class PlayerAnimator : MonoBehaviour, IAnimationStateReader
   {
+    private const int SensitivityModifier = 4;
     private Animator _animator;
 
     private static readonly int MoveHash = Animator.StringToHash("Walking");
@@ -34,24 +35,24 @@ namespace Modules.Core.PlayerLogic
     
     private void Update()
     {
-      float value = Math.Abs(_inputService.Axis.x) + Math.Abs(_inputService.Axis.y);
+      if(_inputService == null)
+        return;
+      
+      float value = CharacterDisplacementValue();
       _animator.SetFloat(MoveHash, value, 0.1f, Time.deltaTime);
     }
+    
+    private float CharacterDisplacementValue() =>
+      (Math.Abs(_inputService.Axis.x) + Math.Abs(_inputService.Axis.y)) * SensitivityModifier;
 
-    public void PlayHit()
-    {
+    public void PlayHit() =>
       _animator.SetTrigger(HitHash);
-    }
 
-    public void PlayDeath()
-    {
+    public void PlayDeath() =>
       _animator.SetTrigger(DieHash);
-    }
 
-    public void ResetToIdle()
-    {
+    public void ResetToIdle() =>
       _animator.Play(_idleStateHash, -1);
-    }
 
     public void EnteredState(int stateHash)
     {
@@ -59,10 +60,8 @@ namespace Modules.Core.PlayerLogic
       StateEntered?.Invoke(State);
     }
 
-    public void ExitedState(int stateHash)
-    {
+    public void ExitedState(int stateHash) =>
       StateExited?.Invoke(StateFor(stateHash));
-    }
 
     private AnimatorState StateFor(int stateHash)
     {

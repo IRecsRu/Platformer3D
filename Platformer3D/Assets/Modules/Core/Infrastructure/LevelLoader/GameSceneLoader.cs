@@ -55,7 +55,7 @@ namespace Modules.Core.Infrastructure.LevelLoader
 			PlayerMove playerMove = player.GetComponent<PlayerMove>();
 			_levelManager.SetPlayer(playerMove);
 
-			await _levelManager.Initialization(progress.LastLevels, progress.LastStorage);
+			await _levelManager.Initialization(progress.LastStorage);
 			_storageProgress.RegisterProgressWatchers(_levelManager);
 		}
 	}

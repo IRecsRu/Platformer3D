@@ -33,7 +33,7 @@ namespace Modules.Core.Infrastructure.Services.SaveLoad
 		private async Task<PlayerProgress> NewProgress()
 		{
 			PlayerStaticData playerStaticData = await AddressablesAssetLoader.LoadAssetAsync<PlayerStaticData>(PlayerStaticDataKey);
-			var progress =  new PlayerProgress(InitialStorage,InitialLevel, playerStaticData);
+			var progress =  new PlayerProgress(InitialStorage, playerStaticData);
 
 			return progress;
 		}

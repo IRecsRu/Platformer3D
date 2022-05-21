@@ -2,7 +2,8 @@
 
 namespace Modules.GameScene.Levels
 {
-	public class SpawnPoint : MonoBehaviour
+	public class SpawnPoint : SaveTrigger
 	{
+		
 	}
 }

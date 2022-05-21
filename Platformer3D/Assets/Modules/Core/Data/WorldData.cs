@@ -7,7 +7,8 @@ namespace Modules.Core.Data
   public class WorldData
   {
     public PositionOnLevel PositionOnLevel;
-
+    public string LevelName;
+    
     public WorldData()
     {
       PositionOnLevel = new PositionOnLevel();

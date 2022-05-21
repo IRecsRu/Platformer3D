@@ -8,6 +8,7 @@ namespace Modules.Core.PlayerLogic
 	[RequireComponent(typeof(CharacterController), typeof(GroundCheck))]
 	public class PlayerMove : MonoBehaviour, ISavedProgress
 	{
+		private const int JumpAcceleration = 2;
 		[SerializeField] private GameObject _fx;
 		
 		private CharacterController _characterController;
@@ -49,6 +50,9 @@ namespace Modules.Core.PlayerLogic
 			{
 				Vector3 movementVector = _camera.transform.TransformDirection(_inputService.Axis);
 
+				if(!_groundCheck.IsGrounded)
+					movementVector.y *= JumpAcceleration;
+				
 				movementVector.y = 0;
 				movementVector.Normalize();
 
@@ -56,9 +60,7 @@ namespace Modules.Core.PlayerLogic
 
 				movementVector *= _moveStats.MoveSpeed;
 
-				if(!_groundCheck.IsGrounded)
-					movementVector *= 2;
-				
+
 				_characterController.Move(movementVector * Time.deltaTime);
 			}
 		}
@@ -108,7 +110,7 @@ namespace Modules.Core.PlayerLogic
 		private void Warp(Vector3Data to)
 		{
 			_characterController.enabled = false;
-			transform.position = to.AsUnityVector().AddY(_characterController.height * 10);
+			transform.position = to.AsUnityVector().AddY(_characterController.height * 5);
 			_characterController.enabled = true;
 		}
 		

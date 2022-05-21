@@ -10,17 +10,15 @@ namespace Modules.Core.Data
     public bool IsClean;
     
     public string LastStorage;
-    public string LastLevels;
     public HealthState HealthState;
     public MoveStats MoveStats;
     public WorldData WorldData;
 
-    public PlayerProgress(string initialStorage, string initialLevel, PlayerStaticData playerStaticData)
+    public PlayerProgress(string initialStorage, PlayerStaticData playerStaticData)
     {
       IsClean = true;
       
       LastStorage = initialStorage;
-      LastLevels = initialLevel;
       
       HealthState = playerStaticData.HealthState;
       HealthState.ResetHP();

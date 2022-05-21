@@ -27,14 +27,14 @@ namespace Modules.GameScene.Levels
 		public void SetPlayer(PlayerMove player) =>
 			_player = player;
 
-		public async Task Initialization(string sceneName,string storageName)
+		public async Task Initialization(string storageName)
 		{
 			_levelStorage = await AddressablesAssetLoader.LoadAssetAsync<LevelStorage>(storageName);
 			
 			if(_currentLevel != null)
 				await LevelChange();
 			else
-				await Load(GetLevelName(sceneName));
+				await Load(_levelStorage.GetLevel());
 		}
 
 		private async Task LevelChange()
@@ -44,7 +44,7 @@ namespace Modules.GameScene.Levels
 			_currentLevel.Completed -= OnLevelCompleted;
 			Object.Destroy(_currentLevel.gameObject);
 			
-			string levelName = GetLevelName();
+			string levelName = _levelStorage.GetNextLevel();
 			
 			await Load(levelName);
 			
@@ -58,47 +58,20 @@ namespace Modules.GameScene.Levels
 			_player.Warp(_currentLevel.SpawnPoint.position);
 		}
 
-		private string GetLevelName(string name)
-		{
-			int currentIndex = _levelStorage.LevelsName.IndexOf(name);
-			return GetLevelName(currentIndex);
-		}
-		
-		private string GetLevelName()
-		{
-			int currentIndex = _levelStorage.LevelsName.IndexOf(_currentLevel.Name);
-			Debug.Log(currentIndex);
-			currentIndex = currentIndex+ 1;
-			Debug.Log(currentIndex);
-			return GetLevelName(currentIndex);
-		}
-
-		private string GetLevelName(int currentIndex)
-		{
-			if(currentIndex >= _levelStorage.LevelsName.Count)
-				currentIndex = 0;
-
-			string sceneName = _levelStorage.StorageName + _levelStorage.LevelsName[currentIndex];
-			Debug.Log(sceneName);
-			
-			return sceneName;
-		}
-		
 		private async void OnLevelCompleted() =>
 			await LevelChange();
 		
-		public void LoadProgress(PlayerProgress progress)
-		{
-		}
+		public void LoadProgress(PlayerProgress progress){}
 
 		public void UpdateProgress(PlayerProgress progress)
 		{
-			if(progress.LastLevels != _currentLevel.Name)
+			if(progress.WorldData.LevelName != _levelStorage.GetLevel())
 			{
-				progress.WorldData.PositionOnLevel = new PositionOnLevel();
-				progress.LastStorage = _levelStorage.StorageName;
-				progress.WorldData.PositionOnLevel = new();
-				progress.LastLevels = _currentLevel.Name;
+				if(!string.IsNullOrEmpty(progress.WorldData.LevelName))
+					progress.WorldData.PositionOnLevel = new();
+				
+				progress.WorldData.LevelName = _levelStorage.GetLevel();
+				progress.LastStorage = _levelStorage.Name;
 			}
 		}
 	}
