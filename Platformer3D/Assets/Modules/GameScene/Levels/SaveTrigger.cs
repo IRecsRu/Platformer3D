@@ -3,29 +3,20 @@ using UnityEngine;
 
 namespace Modules.GameScene.Levels
 {
-	public class SaveTrigger : MonoBehaviour
+	public class SaveTrigger : LevelTrigger
 	{
 		private ISaveLoadService _saveLoadService;
 
 		[SerializeField] private GameObject _fx;
-		[SerializeField] private BoxCollider _collider;
 
 		public void Construct(ISaveLoadService saveLoadService) =>
 			_saveLoadService = saveLoadService;
 
-		private void OnTriggerEnter(Collider other)
+		protected override void TriggerEnter(Collider other)
 		{
 			_saveLoadService.SaveProgress();
 			Instantiate(_fx, other.transform.position, Quaternion.identity);
 			gameObject.SetActive(false);
-		}
-
-		private void OnDrawGizmos()
-		{
-			if(!_collider) return;
-
-			Gizmos.color = new Color32(30, 200, 30, 130);
-			Gizmos.DrawCube(transform.position + _collider.center, _collider.size);
 		}
 	}
 }

@@ -33,13 +33,15 @@ namespace Modules.Core.PlayerLogic
 
 		private void Update()
 		{
-			if(_inputService == null)
-			   return;
+			if(CheckInputService())
+				return;
+			
 			TryMove();
 			TryJump();
-
-			Debug.Log(_characterController.velocity.magnitude);
 		}
+		
+		private bool CheckInputService() =>
+			_inputService == null;
 
 		private void TryMove()
 		{
@@ -64,19 +66,30 @@ namespace Modules.Core.PlayerLogic
 		private void TryJump()
 		{
 			if(_inputService.IsJumpButtonUp() && _groundCheck.IsGrounded)
-			{
-				_playerVelocity.y = 0f;
-				_playerVelocity.y += Mathf.Sqrt(_moveStats.JumpHeight * -1 * _gravityValue);
-				Instantiate(_fx, transform.position, Quaternion.identity);
-			}
-			
-			_playerVelocity.y += _gravityValue * Time.deltaTime;
+				Jump();
+
+			GravityRestrictions();
 			_characterController.Move(_playerVelocity * Time.deltaTime);
+		}
+		
+		private void GravityRestrictions()
+		{
+			_playerVelocity.y += _gravityValue * Time.deltaTime;
+			
+			if(_playerVelocity.y < _gravityValue)
+				_playerVelocity.y = _gravityValue;
+		}
+
+		private void Jump()
+		{
+			_playerVelocity.y = 0f;
+			_playerVelocity.y += Mathf.Sqrt(_moveStats.JumpHeight * -1 * _gravityValue);
+			Instantiate(_fx, transform.position, Quaternion.identity);
 		}
 
 		public void UpdateProgress(PlayerProgress progress)
 		{
-			progress.WorldData.PositionOnLevel.Position = (transform.position).AsVectorData();
+			progress.WorldData.PositionOnLevel.Position = transform.position.AsVectorData();
 			progress.MoveStats = _moveStats;
 		}
 
@@ -95,7 +108,7 @@ namespace Modules.Core.PlayerLogic
 		private void Warp(Vector3Data to)
 		{
 			_characterController.enabled = false;
-			transform.position = to.AsUnityVector().AddY(_characterController.height * 9);
+			transform.position = to.AsUnityVector().AddY(_characterController.height * 10);
 			_characterController.enabled = true;
 		}
 		
